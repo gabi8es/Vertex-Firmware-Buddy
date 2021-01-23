@@ -99,7 +99,7 @@ using Screen = ScreenMenu<EHeader::Off, EFooter::On, HelpLines_None, MI_RETURN, 
     MI_LAN_SETTINGS,
     MI_TIMEZONE,
     #endif //BUDDY_ENABLE_ETHERNET
-    MI_SAVE_DUMP, MI_SOUND_MODE, MI_SOUND_VOLUME, MI_DEVHASH_IN_QR, MI_LANGUAGE>;
+    MI_SAVE_DUMP, MI_SOUND_MODE, MI_SOUND_VOLUME, MI_DEVHASH_IN_QR, MI_VERTEX, MI_LANGUAGE>;
 #endif
 
 class ScreenMenuSettings : public Screen {
