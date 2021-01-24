@@ -209,3 +209,13 @@ MI_VERTEX::MI_VERTEX()
 void MI_VERTEX::click(IWindowMenu & /*window_menu*/) {
     Screens::Access()->Open(GetScreenMenuVertex);
 }
+
+/*****************************************************************************/
+//MI_VERTEX_SN
+MI_VERTEX_SN::MI_VERTEX_SN()
+    : WI_LABEL_t(_(label), 0, is_enabled_t::yes, is_hidden_t::no) {
+}
+
+void MI_VERTEX_SN::click(IWindowMenu & /*window_menu*/) {
+    Screens::Access()->Open(GetScreenVertexSN);
+}

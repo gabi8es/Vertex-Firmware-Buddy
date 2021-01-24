@@ -205,3 +205,13 @@ public:
 protected:
     virtual void click(IWindowMenu &window_menu) override;
 };
+
+class MI_VERTEX_SN : public WI_LABEL_t {
+    static constexpr const char *const label = N_("Set Serial Number");
+
+public:
+    MI_VERTEX_SN();
+
+protected:
+    virtual void click(IWindowMenu &window_menu) override;
+};

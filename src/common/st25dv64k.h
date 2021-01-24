@@ -24,6 +24,8 @@ extern void st25dv64k_wr_cfg(uint16_t address, uint8_t data);
 
 extern void st25dv64k_present_pwd(uint8_t *pwd);
 
+extern void st25dv64k_user_write_bytes_32(uint32_t address, void const *pdata, uint8_t size); 
+
 #ifdef __cplusplus
 }
 #endif
