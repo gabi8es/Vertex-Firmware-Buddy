@@ -1,8 +1,8 @@
 /*
- * 	screen_version_info.cpp
+ * 	screen_menu_vertex.cpp
  *
- *  Created on: 2019-10-14
- *      Author: Michal Rudolf
+ *  Created on: 2021.01.31
+ *      Author: Juan Francisco Estrada juanfra@cloudhd.eu
  */
 //todo THIS SHOULD NOT BE MENU!!!
 #include <stdlib.h>
@@ -16,9 +16,8 @@
 #include "WindowMenuItems.hpp"
 #include "i18n.h"
 #include "MItem_menus.hpp"
-#include "shared_config.h" //BOOTLOADER_VERSION_ADDRESS
 
-using Screen = ScreenMenu<EHeader::Off, EFooter::On, HelpLines_None, MI_RETURN, MI_VERTEX_SN>;
+using Screen = ScreenMenu<EHeader::Off, EFooter::On, HelpLines_None, MI_RETURN, MI_VERTEX_COMMUNITY, MI_VERTEX_GITHUB, MI_VERTEX_WEB, MI_VERTEX_ABOUT>;
 
 class ScreenMenuVertex : public Screen {
 public:

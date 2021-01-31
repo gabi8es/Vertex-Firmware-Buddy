@@ -625,7 +625,10 @@ if(GUI)
             src/gui/screen_menu_tune.cpp
             src/gui/screen_menu_fw_update.cpp
             src/gui/screen_menu_vertex.cpp
-            src/gui/screen_vertex_sn.cpp
+            src/gui/screen_menu_vertex_about.cpp
+            src/gui/screen_menu_vertex_community.cpp
+            src/gui/screen_menu_vertex_github.cpp
+            src/gui/screen_menu_vertex_web.cpp
             src/gui/test/screen_menu_test_temperature.cpp
             src/gui/test/screen_mesh_bed_lv.cpp
             src/gui/screen_menu_eeprom.cpp

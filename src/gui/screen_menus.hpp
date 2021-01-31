@@ -22,3 +22,7 @@ ScreenFactory::UniquePtr GetScreenMenuSteelSheets();
 ScreenFactory::UniquePtr GetScreenEeprom();
 ScreenFactory::UniquePtr GetScreenMenuVertex();
 ScreenFactory::UniquePtr GetScreenVertexSN();
+ScreenFactory::UniquePtr GetScreenAboutVertex();
+ScreenFactory::UniquePtr GetScreenCommunityVertex();
+ScreenFactory::UniquePtr GetScreenGithubVertex();
+ScreenFactory::UniquePtr GetScreenWebVertex();
