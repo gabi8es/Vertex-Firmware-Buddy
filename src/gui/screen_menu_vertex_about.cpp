@@ -30,7 +30,7 @@ ScreenAboutVertex::ScreenAboutVertex()
     header.SetIcon(IDR_PNG_info_16px);
     header.SetText(_("Adapted by"));
     back_label.SetText(_("Back"));
-    back_label.SetAlignment(ALIGN_CENTER);
+    back_label.SetAlignment(Align_t::Center());
     back_label.font = resource_font(IDR_FNT_SMALL);
 }
 
