@@ -18,6 +18,7 @@ protected:
     static constexpr padding_ui8_t Padding = GuiDefaults::MenuSpinHasUnits ? GuiDefaults::MenuPaddingSpecial : GuiDefaults::MenuPadding;
     static constexpr size_t unit__half_space_padding = 6;
     static constexpr bool has_unit = GuiDefaults::MenuSpinHasUnits;
+    static constexpr const char *const off_opt = N_("Off");
 
     using SpinTextArray = std::array<char, 10>;
     SpinTextArray spin_text_buff; //temporary buffer to print value for text measurements
@@ -30,7 +31,7 @@ protected:
     Rect16 getUnitRect(Rect16 extension_rect) const;
 
     virtual void click(IWindowMenu &window_menu) final;
-    virtual void printExtension(Rect16 extension_rect, color_t color_text, color_t color_back, uint8_t swap) const override;
+    virtual void printExtension(Rect16 extension_rect, color_t color_text, color_t color_back, ropfn raster_op) const override;
 
 public:
     IWiSpin(SpinType val, string_view_utf8 label, uint16_t id_icon, is_enabled_t enabled, is_hidden_t hidden, string_view_utf8 units_, size_t extension_width_);
@@ -93,7 +94,11 @@ invalidate_t WI_SPIN_t<T>::Change(int dif) {
 
 template <class T>
 void WI_SPIN_t<T>::printSpinToBuffer() {
-    snprintf(spin_text_buff.data(), spin_text_buff.size(), config.prt_format, (T)(value));
+    if (config.IsOffOptionEnabled() && (T)(value) == 0) {
+        strncpy(spin_text_buff.data(), off_opt, strlen(off_opt) + 1);
+    } else {
+        snprintf(spin_text_buff.data(), spin_text_buff.size(), config.prt_format, (T)(value));
+    }
 }
 
 template <>

@@ -31,7 +31,7 @@
 #include "safety_timer_stubbed.hpp"
 #include "marlin_server.hpp"
 #include "filament_sensor.hpp"
-#include "filament.h"
+#include "filament.hpp"
 #include "client_response.hpp"
 #include "RAII.hpp"
 #include <cmath>
@@ -275,7 +275,7 @@ bool Pause::loadLoop(is_standalone_t standalone) {
         }
         break;
     case LoadPhases_t::check_filament_sensor_and_user_push__ask:
-        if (fs_get_state() == fsensor_t::NoFilament) {
+        if (FS_instance().Get() == fsensor_t::NoFilament) {
             setPhase(PhasesLoadUnload::MakeSureInserted);
         } else {
             setPhase(PhasesLoadUnload::UserPush);
@@ -287,7 +287,7 @@ bool Pause::loadLoop(is_standalone_t standalone) {
     case LoadPhases_t::load_in_gear: //slow load
         setPhase(PhasesLoadUnload::Inserting, 10);
         do_e_move_notify_progress_coldextrude(slow_load_length, FILAMENT_CHANGE_SLOW_LOAD_FEEDRATE, 10, 30); // TODO method without param using actual phase
-        set_filament(filament_to_load);
+        Filaments::Set(Filaments::GetToBeLoaded());
         set(LoadPhases_t::wait_temp);
         break;
     case LoadPhases_t::wait_temp:
@@ -441,13 +441,13 @@ void Pause::unloadLoop(is_standalone_t standalone) {
 
         planner.settings.retract_acceleration = saved_acceleration;
 
-        set_filament(FILAMENT_NONE);
+        Filaments::Set(filament_t::NONE);
         setPhase(PhasesLoadUnload::IsFilamentUnloaded, 100);
         set(standalone == is_standalone_t::yes ? UnloadPhases_t::_finish : UnloadPhases_t::unloaded__ask);
     } break;
     case UnloadPhases_t::unloaded__ask: {
         if (response == Response::Yes) {
-            set(UnloadPhases_t::_finish);
+            set(UnloadPhases_t::filament_not_in_fs);
         }
         if (response == Response::No) {
             setPhase(PhasesLoadUnload::ManualUnload, 100);
@@ -456,10 +456,16 @@ void Pause::unloadLoop(is_standalone_t standalone) {
         }
 
     } break;
+    case UnloadPhases_t::filament_not_in_fs: {
+        setPhase(PhasesLoadUnload::FilamentNotInFS);
+        if (FS_instance().Get() != fsensor_t::HasFilament) {
+            set(UnloadPhases_t::_finish);
+        }
+    } break;
     case UnloadPhases_t::manual_unload: {
         if (response == Response::Continue) {
             enable_e_steppers();
-            set(UnloadPhases_t::_finish);
+            set(UnloadPhases_t::filament_not_in_fs);
         }
     } break;
     default:
@@ -663,7 +669,7 @@ void Pause::FilamentChange() {
     if (print_job_timer.isPaused())
         print_job_timer.start();
 
-    fs_clr_sent(); //reset filament sensor M600 sent flag
+    FS_instance().ClrM600Sent(); //reset filament sensor M600 sent flag
 
 #if HAS_DISPLAY
     ui.reset_status();

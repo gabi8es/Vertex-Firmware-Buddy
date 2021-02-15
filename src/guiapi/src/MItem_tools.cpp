@@ -18,7 +18,7 @@
 #include "DialogHandler.hpp"
 #include "selftest_MINI.h"
 #include "filament_sensor.hpp"
-#include "main_MINI.h"
+#include "main.h"
 #include "Pin.hpp"
 #include "hwio_pindef.h"
 #include "menu_spin_config.hpp"
@@ -426,16 +426,16 @@ void MI_TIMEZONE::OnClick() {
 
 /*****************************************************************************/
 //I_MI_Filament
-void I_MI_Filament::click_at(FILAMENT_t filament_index) {
-    const filament_t filament = filaments[filament_index];
+void I_MI_Filament::click_at(filament_t filament_index) {
+    const Filament filament = Filaments::Get(filament_index);
     /// don't use preheat temp for cooldown
-    if (PREHEAT_TEMP >= filament.nozzle) {
+    if (Filaments::PreheatTemp >= filament.nozzle) {
         marlin_gcode_printf("M104 S%d", (int)filament.nozzle);
     } else {
-        marlin_gcode_printf("M104 S%d D%d", (int)PREHEAT_TEMP, (int)filament.nozzle);
+        marlin_gcode_printf("M104 S%d D%d", (int)Filaments::PreheatTemp, (int)filament.nozzle);
     }
     marlin_gcode_printf("M140 S%d", (int)filament.heatbed);
-    set_last_preheated_filament(filament_index);
+    Filaments::SetLastPreheated(filament_index);
     Screens::Access()->Close(); // skip this screen everytime
 }
 
@@ -444,7 +444,7 @@ MI_FILAMENT_SENSOR_STATE::MI_FILAMENT_SENSOR_STATE()
 }
 
 MI_FILAMENT_SENSOR_STATE::state_t MI_FILAMENT_SENSOR_STATE::get_state() {
-    fsensor_t fs = fs_wait_initialized();
+    fsensor_t fs = FS_instance().WaitInitialized();
     switch (fs) {
     case fsensor_t::HasFilament:
         return state_t::high;
@@ -469,4 +469,34 @@ MI_MINDA::state_t MI_MINDA::get_state() {
 
 bool MI_MINDA::StateChanged() {
     return SetIndex((size_t)get_state());
+}
+
+/*****************************************************************************/
+//MI_FAN_CHECK
+MI_FAN_CHECK::MI_FAN_CHECK()
+    : WI_SWITCH_OFF_ON_t(variant_get_ui8(marlin_get_var(MARLIN_VAR_FAN_CHECK_ENABLED)), _(label), 0, is_enabled_t::yes, is_hidden_t::no) {}
+void MI_FAN_CHECK::OnChange(size_t old_index) {
+    if (!old_index) {
+        marlin_set_var(MARLIN_VAR_FAN_CHECK_ENABLED, variant8_ui8(1));
+    } else {
+        marlin_set_var(MARLIN_VAR_FAN_CHECK_ENABLED, variant8_ui8(0));
+    }
+    eeprom_set_var(EEVAR_FAN_CHECK_ENABLED, variant8_ui8(marlin_get_var(MARLIN_VAR_FAN_CHECK_ENABLED)));
+}
+
+/*****************************************************************************/
+//MI_FS_AUTOLOAD
+is_hidden_t hide_autoload_item() {
+    return FS_instance().Get() == fsensor_t::Disabled ? is_hidden_t::yes : is_hidden_t::no;
+}
+
+MI_FS_AUTOLOAD::MI_FS_AUTOLOAD()
+    : WI_SWITCH_OFF_ON_t(variant_get_ui8(marlin_get_var(MARLIN_VAR_FS_AUTOLOAD_ENABLED)), _(label), 0, is_enabled_t::yes, hide_autoload_item()) {}
+void MI_FS_AUTOLOAD::OnChange(size_t old_index) {
+    if (!old_index) {
+        marlin_set_var(MARLIN_VAR_FS_AUTOLOAD_ENABLED, variant8_ui8(1));
+    } else {
+        marlin_set_var(MARLIN_VAR_FS_AUTOLOAD_ENABLED, variant8_ui8(0));
+    }
+    eeprom_set_var(EEVAR_FS_AUTOLOAD_ENABLED, variant8_ui8(marlin_get_var(MARLIN_VAR_FS_AUTOLOAD_ENABLED)));
 }

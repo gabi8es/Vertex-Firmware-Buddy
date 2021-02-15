@@ -14,6 +14,7 @@
 #include "ScreenFactory.hpp"
 #include "screen_menus.hpp"
 #include "gui_media_events.hpp"
+#include "window_dlg_load_unload.hpp"
 
 #include "i18n.h"
 
@@ -49,7 +50,7 @@ screen_home_data_t::screen_home_data_t()
     , footer(this)
     , logo(this, Rect16(41, 31, 158, 40), IDR_PNG_prusa_printer_logo)
     , w_buttons { { this, Rect16(), 0, []() { Screens::Access()->Open(ScreenFactory::Screen<screen_filebrowser_data_t>); } },
-        { this, Rect16(), 0, []() { Screens::Access()->Open(GetScreenMenuPreheat); } },
+        { this, Rect16(), 0, []() { PreheatStatus::Dialog(PreheatMode::None, RetAndCool_t::Both); } },
         { this, Rect16(), 0, []() { Screens::Access()->Open(GetScreenMenuFilament); } },
         { this, Rect16(), 0, []() { Screens::Access()->Open(GetScreenMenuCalibration); } },
         { this, Rect16(), 0, []() { Screens::Access()->Open(GetScreenMenuSettings); } },
@@ -81,7 +82,7 @@ screen_home_data_t::screen_home_data_t()
 
             w_labels[i].rect = Rect16(80 * col, 154 + (15 + 64) * row, 80, 14);
             w_labels[i].font = resource_font(IDR_FNT_SMALL);
-            w_labels[i].SetAlignment(ALIGN_CENTER);
+            w_labels[i].SetAlignment(Align_t::Center());
             w_labels[i].SetPadding({ 0, 0, 0, 0 });
             w_labels[i].SetText(_(labels[i]));
         }

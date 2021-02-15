@@ -22,8 +22,8 @@ size_t RadioButton::cnt_responses(const PhaseResponses *resp) {
 }
 
 size_t RadioButton::cnt_buttons(const PhaseTexts *labels, const PhaseResponses *resp) {
-    size_t lbls = cnt_labels(labels);
-    size_t cmds = cnt_responses(resp);
+    size_t lbls = std::min(cnt_labels(labels), max_buttons);
+    size_t cmds = std::min(cnt_responses(resp), max_buttons);
     return std::max(lbls, cmds);
 }
 /*****************************************************************************/
@@ -81,7 +81,8 @@ void RadioButton::windowEvent(EventLock /*has private ctor*/, window_t *sender, 
 }
 
 void RadioButton::unconditionalDraw() {
-    switch (GetBtnCount()) {
+    const size_t cnt = GetBtnCount();
+    switch (cnt) {
     case 0:
         draw_0_btn(); //cannot use draw_n_btns, would div by 0
         break;
@@ -89,7 +90,7 @@ void RadioButton::unconditionalDraw() {
         draw_1_btn(); //could use draw_n_btns, but this is much faster
         break;
     default:
-        draw_n_btns(GetBtnCount());
+        draw_n_btns(cnt);
         break;
     }
 }
@@ -146,7 +147,7 @@ void RadioButton::draw_n_btns(const size_t btn_count) const {
 void RadioButton::button_draw(Rect16 rc_btn, string_view_utf8 text, const font_t *pf, bool is_selected) {
     color_t back_cl = is_selected ? COLOR_ORANGE : COLOR_GRAY;
     color_t text_cl = is_selected ? COLOR_BLACK : COLOR_WHITE;
-    render_text_align(rc_btn, text, pf, back_cl, text_cl, { 0, 0, 0, 0 }, ALIGN_CENTER);
+    render_text_align(rc_btn, text, pf, back_cl, text_cl, { 0, 0, 0, 0 }, Align_t::Center());
 }
 
 bool RadioButton::IsEnabled() const {

@@ -9,7 +9,7 @@
 
 #include "config.h"
 #include "status_footer.h"
-#include "filament.h"
+#include "filament.hpp"
 #include "marlin_client.h"
 #include "stm32f4xx_hal.h"
 #include "cmath_ext.h"
@@ -70,7 +70,7 @@ void status_footer_t::update_nozzle(const marlin_vars_t *vars) {
         return;
 
     /// nozzle state
-    if (nearlyEqual(vars->target_nozzle, PREHEAT_TEMP, 0.4999f) && vars->display_nozzle > vars->target_nozzle) { /// preheat mode
+    if (nearlyEqual(vars->target_nozzle, Filaments::PreheatTemp, 0.4999f) && vars->display_nozzle > vars->target_nozzle) { /// preheat mode
         nozzle_state = HeatState::PREHEAT;
         if (vars->target_nozzle > vars->temp_nozzle + heating_difference) {
             nozzle_state = HeatState::HEATING;
@@ -173,10 +173,10 @@ void status_footer_t::update_z_axis() {
 }
 
 void status_footer_t::update_filament() {
-    if (0 == strcmp(filament, filaments[get_filament()].name))
+    if (0 == strcmp(filament, Filaments::Current().name))
         return;
 
-    filament = filaments[get_filament()].name;
+    filament = Filaments::Current().name;
     wt_filament.SetText(string_view_utf8::MakeCPUFLASH((const uint8_t *)filament));
 }
 
@@ -260,24 +260,24 @@ status_footer_t::status_footer_t(window_t *parent)
     , cached_no_of_calibrated_sheets(0) {
 
     wt_nozzle.font = resource_font(IDR_FNT_SPECIAL);
-    wt_nozzle.SetAlignment(ALIGN_CENTER);
+    wt_nozzle.SetAlignment(Align_t::Center());
     wt_nozzle.SetText(string_view_utf8::MakeNULLSTR());
 
     wt_heatbed.font = resource_font(IDR_FNT_SPECIAL);
-    wt_heatbed.SetAlignment(ALIGN_CENTER);
+    wt_heatbed.SetAlignment(Align_t::Center());
     wt_heatbed.SetText(string_view_utf8::MakeNULLSTR());
 
     wt_prnspeed.font = resource_font(IDR_FNT_SPECIAL);
-    wt_prnspeed.SetAlignment(ALIGN_CENTER);
+    wt_prnspeed.SetAlignment(Align_t::Center());
     wt_prnspeed.SetText(string_view_utf8::MakeNULLSTR());
 
     wt_z_profile.font = resource_font(IDR_FNT_SPECIAL);
-    wt_z_profile.SetAlignment(ALIGN_CENTER);
+    wt_z_profile.SetAlignment(Align_t::Center());
     wt_z_profile.SetText(string_view_utf8::MakeNULLSTR());
 
     wt_filament.font = resource_font(IDR_FNT_SPECIAL);
-    wt_filament.SetAlignment(ALIGN_CENTER);
-    wt_filament.SetText(string_view_utf8::MakeCPUFLASH((const uint8_t *)filaments[get_filament()].name));
+    wt_filament.SetAlignment(Align_t::Center());
+    wt_filament.SetText(string_view_utf8::MakeCPUFLASH((const uint8_t *)Filaments::Current().name));
 
     filament = emptystr;
 

@@ -6,7 +6,7 @@
 #include "stm32f4xx_hal.h"
 #include "marlin_client.h"
 #include "wizard_config.hpp"
-#include "filament.h"
+#include "filament.hpp"
 #include "eeprom.h"
 #include "filament_sensor.hpp"
 #include "i18n.h"
@@ -151,10 +151,10 @@ WizardState_t StateFnc_START() {
 
 WizardState_t StateFnc_INIT() {
     //wizard_init(_START_TEMP_NOZ, _START_TEMP_BED);
-    if (fs_get_state() == fsensor_t::Disabled) {
-        fs_enable();
-        if (fs_wait_initialized() == fsensor_t::NotConnected)
-            fs_disable();
+    if (FS_instance().Get() == fsensor_t::Disabled) {
+        FS_instance().Enable();
+        if (FS_instance().WaitInitialized() == fsensor_t::NotConnected)
+            FS_instance().Disable();
     }
 
     //preheat for SELFTEST_TEMP, so selftest is quicker
